@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import Keyv from "keyv";
 import KeyvFile from "keyv-file";
 import _ from "lodash";
+import { handleCommand } from "./handlers/command";
 import { handleRedirect } from "./handlers/redirect";
 import { handleTopic } from "./handlers/topic";
 
