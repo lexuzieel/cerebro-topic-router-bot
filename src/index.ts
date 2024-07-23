@@ -65,5 +65,17 @@ const services = {
 
         await handleTopic(ctx, services);
         await handleRedirect(ctx, services);
+
+        await handleCommand(ctx, services, "help", async ctx => {
+            const replyTo = ctx.msg.replyToMessageId
+                ? {
+                      messageId: ctx.msg.replyToMessageId,
+                  }
+                : undefined;
+
+            await client.sendMessage(ctx.msg.chat.id, "<help message>", {
+                replyTo,
+            });
+        });
     });
 })();
