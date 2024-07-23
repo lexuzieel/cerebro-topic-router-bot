@@ -4,6 +4,8 @@ import _ from "lodash";
 import { Services } from "../types/services";
 import { Topic } from "../types/topic";
 
+let previousTopic: Topic | undefined;
+
 export const handleRedirect = async (
     ctx: WithFilter<Context, "message">,
     services: Services,
@@ -28,12 +30,43 @@ export const handleRedirect = async (
     // Topic name is on the second line
     const parsedTopic = lines[1]?.trim() || "";
 
+    // If there is no parsed topic, then attempt
+    // to send the message to the to the previous topic
+    if (!parsedTopic && previousTopic) {
+        const params = {
+            caption: _.get(msg, "caption") || undefined,
+            captionEntities: _.get(msg, "captionEntities"),
+            replyTo: {
+                messageId: previousTopic.id,
+            },
+        };
+
+        const video = _.get(msg, "video.fileId", "");
+        const audio = _.get(msg, "audio.fileId", "");
+        const photo = _.get(msg, "photo.fileId", "");
+        const document = _.get(msg, "document.fileId", "");
+
+        if ("video" in msg) {
+            await client.sendVideo(chat.id, video, params);
+        } else if ("audio" in msg) {
+            await client.sendAudio(chat.id, audio, params);
+        } else if ("photo" in msg) {
+            await client.sendPhoto(chat.id, photo, params);
+        } else if ("document" in msg) {
+            await client.sendDocument(chat.id, document, params);
+        }
+
+        return;
+    }
+
     // Look through each subscribed topics
     for (const topic of topics) {
         // If the topic name does not match skip the topic
         if (topic.name.toLocaleLowerCase() != parsedTopic.toLocaleLowerCase()) {
             continue;
         }
+
+        previousTopic = topic;
 
         const finalText = `${text}\n↩️ <a href="${msg.link}">General</a>`;
 
