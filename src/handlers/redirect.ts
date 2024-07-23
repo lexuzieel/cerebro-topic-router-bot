@@ -1,7 +1,4 @@
-import {
-  Client,
-  Context,
-} from "@mtkruto/node";
+import { Client, Context } from "@mtkruto/node";
 import _ from "lodash";
 import Keyv from "keyv";
 import { WithFilter } from "@mtkruto/node/script/client/0_filters";
@@ -32,7 +29,7 @@ export const handleRedirect = async (
   // Parse topic from the message text
   const lines = text.split("\n");
   // Topic name is on the second line
-  const parsedTopic = lines[1]?.trim() || '';
+  const parsedTopic = lines[1]?.trim() || "";
 
   // Look through each subscribed topics
   for (const topic of topics) {
