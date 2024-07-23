@@ -1,16 +1,13 @@
-import { Client, Context } from "@mtkruto/node";
+import { Context } from "@mtkruto/node";
 import { WithFilter } from "@mtkruto/node/script/client/0_filters";
-import Keyv from "keyv";
-import KeyvFile from "keyv-file";
 import _ from "lodash";
 import { Topic } from "../topic";
+import { Services } from "../types/services";
+import { handleCommand } from "./command";
 
 export const handleTopic = async (
     ctx: WithFilter<Context, "message">,
-    services: {
-        client: Client;
-        keyv: Keyv;
-    },
+    services: Services,
 ) => {
     const { client, keyv } = services;
 
@@ -37,50 +34,38 @@ export const handleTopic = async (
             id: topicId,
         };
 
-        const message = _.get(ctx.msg, "text");
-        const mentioned =
-            ctx.me?.username ==
-            message?.slice(1, (ctx.me?.username?.length || 0) + 1);
+        await handleCommand(ctx, services, "forget", async () => {
+            topics = _.remove(topics, t => t.name !== topic.name);
 
-        const text = message?.slice((ctx.me?.username?.length || 0) + 2);
+            await keyv.set(topicsKey, topics);
 
-        if (mentioned) {
-            switch (text?.toLowerCase()) {
-                case "forget": {
-                    topics = _.remove(topics, t => t.name !== topic.name);
+            await client.sendMessage(
+                ctx.msg.chat.id,
+                `Removed topic: <b>${topicName}</b>`,
+                {
+                    parseMode: "HTML",
+                    replyTo: {
+                        messageId: ctx.msg.replyToMessageId || 0,
+                    },
+                },
+            );
+        });
 
-                    await keyv.set(topicsKey, topics);
+        await handleCommand(ctx, services, null, async () => {
+            topics = _.uniqBy([...topics, topic], t => t.name);
 
-                    await client.sendMessage(
-                        ctx.msg.chat.id,
-                        `Removed topic: <b>${topicName}</b>`,
-                        {
-                            parseMode: "HTML",
-                            replyTo: {
-                                messageId: ctx.msg.replyToMessageId || 0,
-                            },
-                        },
-                    );
+            await keyv.set(topicsKey, topics);
 
-                    break;
-                }
-                default: {
-                    topics = _.uniqBy([...topics, topic], t => t.name);
-
-                    await keyv.set(topicsKey, topics);
-
-                    await client.sendMessage(
-                        ctx.msg.chat.id,
-                        `Added topic: <b>${topicName}</b>`,
-                        {
-                            parseMode: "HTML",
-                            replyTo: {
-                                messageId: ctx.msg.replyToMessageId || 0,
-                            },
-                        },
-                    );
-                }
-            }
-        }
+            await client.sendMessage(
+                ctx.msg.chat.id,
+                `Added topic: <b>${topicName}</b>`,
+                {
+                    parseMode: "HTML",
+                    replyTo: {
+                        messageId: ctx.msg.replyToMessageId || 0,
+                    },
+                },
+            );
+        });
     }
 };
