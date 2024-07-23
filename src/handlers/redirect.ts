@@ -11,8 +11,14 @@ export const handleRedirect = async (
     services: Services,
 ) => {
     const { client, keyv } = services;
-
     const { me, msg, chat } = ctx;
+
+    const isCerebroBot = ctx.from?.username == "CerebrohqBot";
+
+    // If the message is not from Cerebro bot - skip the handler
+    if (!isCerebroBot) {
+        return;
+    }
 
     // If this is a topic message skip the handler
     if (msg.replyToMessage || msg.from?.id === me?.id) {

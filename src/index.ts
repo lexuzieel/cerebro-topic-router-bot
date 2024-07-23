@@ -59,13 +59,16 @@ const services = {
     }
 
     client.on("message", async ctx => {
+        // TODO: Make this sequential
+        await handleRedirect(ctx, services);
+    });
+
+    client.on("message", async ctx => {
         if (ctx.chat.type != "supergroup") {
-            console.warn(`Chat ${ctx.chat.id} is not a supergroup`);
             return;
         }
 
         await handleTopic(ctx, services);
-        await handleRedirect(ctx, services);
 
         await handleCommand(ctx, services, "help", async ctx => {
             const replyTo = ctx.msg.replyToMessageId
@@ -79,4 +82,6 @@ const services = {
             });
         });
     });
+
+    console.log("Bot started");
 })();
