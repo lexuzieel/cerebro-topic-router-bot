@@ -34,7 +34,7 @@ export const handleRedirect = async (
   // Look through each subscribed topics
   for (const topic of topics) {
     // If the topic name does not match skip the topic
-    if (topic.name != parsedTopic) {
+    if (topic.name.toLocaleLowerCase() != parsedTopic.toLocaleLowerCase()) {
       continue;
     }
 
