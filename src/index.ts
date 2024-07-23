@@ -59,6 +59,11 @@ const services = {
   }
 
   client.on("message", async (ctx) => {
+    if (ctx.chat.type != "supergroup") {
+      console.warn(`Chat ${ctx.chat.id} is not a supergroup`);
+      return;
+    }
+
     await handleTopic(ctx, services);
     await handleRedirect(ctx, services);
   });
