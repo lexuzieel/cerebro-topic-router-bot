@@ -59,9 +59,11 @@ const services = {
     }
 
     client.on("message", async ctx => {
-        if (ctx.chat.type != "supergroup") {
+        if (ctx.chat.type != "supergroup" || ctx.me?.id == ctx.from?.id) {
             return;
         }
+
+        console.log(`Got message from ${ctx.from?.id}`);
 
         await handleTopic(ctx, services);
 
@@ -75,11 +77,14 @@ const services = {
                   }
                 : undefined;
 
-            await client.sendMessage(ctx.msg.chat.id, `
+            await client.sendMessage(
+                ctx.msg.chat.id,
+                `
 🔹 add - Add topic to the redirect list
 🔹 remove - Remove topic from the redirect list
-🔹 help - Show this message`, {
-                replyTo,
+🔹 help - Show this message`,
+                {
+                    replyTo,
             });
         });
     });
