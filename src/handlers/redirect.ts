@@ -2,9 +2,9 @@ import { Context, Message } from "@mtkruto/node";
 import _ from "lodash";
 import PQueue from "p-queue";
 import pRetry from "p-retry";
-import { Services } from "../types/services.ts";
-import { Topic } from "../types/topic.ts";
-import { yn } from "../utils/yn.ts";
+import { Services } from "../types/services.js";
+import { Topic } from "../types/topic.js";
+import { yn } from "../utils/yn.js";
 
 let linkedTopic: Topic | undefined;
 

@@ -1,6 +1,6 @@
 import { Context } from "@mtkruto/node";
 import _ from "lodash";
-import { Services } from "../types/services.ts";
+import { Services } from "../types/services.js";
 
 export const handleCommand = async (
     ctx: Context,

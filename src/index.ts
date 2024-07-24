@@ -4,9 +4,9 @@ import dotenv from "dotenv";
 import Keyv from "keyv";
 import { KeyvFile } from "keyv-file";
 import _ from "lodash";
-import { handleCommand } from "./handlers/command.ts";
-import { handleRedirect } from "./handlers/redirect.ts";
-import { handleTopic } from "./handlers/topic.ts";
+import { handleCommand } from "./handlers/command.js";
+import { handleRedirect } from "./handlers/redirect.js";
+import { handleTopic } from "./handlers/topic.js";
 
 dotenv.config();
 
