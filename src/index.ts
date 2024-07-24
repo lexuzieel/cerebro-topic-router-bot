@@ -59,11 +59,6 @@ const services = {
     }
 
     client.on("message", async ctx => {
-        // TODO: Make this sequential
-        await handleRedirect(ctx, services);
-    });
-
-    client.on("message", async ctx => {
         if (ctx.chat.type != "supergroup") {
             return;
         }
