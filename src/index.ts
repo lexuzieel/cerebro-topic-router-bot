@@ -65,8 +65,6 @@ const services = {
             return;
         }
 
-        console.log(`Got message from ${ctx.from?.id}`);
-
         await handleTopic(ctx, services);
 
         // TODO: Make this sequential
@@ -81,10 +79,11 @@ const services = {
 
             await client.sendMessage(
                 msg.chat.id,
-                `
-        🔹 add - Add topic to the redirect list
-        🔹 remove - Remove topic from the redirect list
-        🔹 help - Show this message`,
+                [
+                    `🔹 add - Add topic to the redirect list`,
+                    `🔹 remove - Remove topic from the redirect list`,
+                    `🔹 help - Show this message`,
+                ].join("\n"),
                 {
                     replyTo,
                 },
