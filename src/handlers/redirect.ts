@@ -3,6 +3,7 @@ import { WithFilter } from "@mtkruto/node/script/client/0_filters";
 import _ from "lodash";
 import { Services } from "../types/services";
 import { Topic } from "../types/topic";
+import { yn } from "../utils/yn";
 
 let previousTopic: Topic | undefined;
 
@@ -13,7 +14,9 @@ export const handleRedirect = async (
     const { client, keyv } = services;
     const { me, msg, chat } = ctx;
 
-    const isCerebroBot = ctx.from?.username == "CerebrohqBot";
+    const isCerebroBot =
+        yn(process.env.REDIRECT_FROM_ANYONE) ||
+        ctx.from?.username == "CerebrohqBot";
 
     // If the message is not from Cerebro bot - skip the handler
     if (!isCerebroBot) {
