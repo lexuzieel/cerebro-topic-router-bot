@@ -1,29 +1,22 @@
 import { Context } from "@mtkruto/node";
-import { WithFilter } from "@mtkruto/node/script/client/0_filters";
 import _ from "lodash";
-import { Services } from "../types/services";
-import { Topic } from "../types/topic";
-import { handleCommand } from "./command";
+import { Services } from "../types/services.ts";
+import { Topic } from "../types/topic.ts";
+import { handleCommand } from "./command.ts";
 
-export const handleTopic = async (
-    ctx: WithFilter<Context, "message">,
-    services: Services,
-) => {
+export const handleTopic = async (ctx: Context, services: Services) => {
     const { client, keyv } = services;
+    const { msg } = ctx;
 
     // If this is a topic message
-    if (ctx.msg.replyToMessage) {
-        const chat = ctx.chat;
-        const topicsKey = `topics:${chat.id}`;
+    if (msg && msg.replyToMessage) {
+        const topicsKey = `topics:${msg.chat.id}`;
 
         // For each incoming message get the list of topics for the chat
         let topics: Topic[] = (await keyv.get(topicsKey)) || [];
 
-        const topicName = _.get(
-            ctx.msg.replyToMessage,
-            "forumTopicCreated.name",
-        );
-        const topicId = ctx.msg.replyToMessageId;
+        const topicName = _.get(msg.replyToMessage, "forumTopicCreated.name");
+        const topicId = msg.replyToMessageId;
 
         if (!topicName || !topicId) {
             return;
@@ -40,12 +33,12 @@ export const handleTopic = async (
             await keyv.set(topicsKey, topics);
 
             await client.sendMessage(
-                ctx.msg.chat.id,
+                msg.chat.id,
                 `Removed topic: <b>${topicName}</b>`,
                 {
                     parseMode: "HTML",
                     replyTo: {
-                        messageId: ctx.msg.replyToMessageId || 0,
+                        messageId: msg.replyToMessageId || 0,
                     },
                 },
             );
@@ -57,12 +50,12 @@ export const handleTopic = async (
             await keyv.set(topicsKey, topics);
 
             await client.sendMessage(
-                ctx.msg.chat.id,
+                msg.chat.id,
                 `Added topic: <b>${topicName}</b>`,
                 {
                     parseMode: "HTML",
                     replyTo: {
-                        messageId: ctx.msg.replyToMessageId || 0,
+                        messageId: msg.replyToMessageId || 0,
                     },
                 },
             );

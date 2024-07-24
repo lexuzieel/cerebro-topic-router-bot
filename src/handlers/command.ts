@@ -1,17 +1,12 @@
-import { Client, Context } from "@mtkruto/node";
-import { WithFilter } from "@mtkruto/node/script/client/0_filters";
-import Keyv from "keyv";
+import { Context } from "@mtkruto/node";
 import _ from "lodash";
-import { Services } from "../types/services";
+import { Services } from "../types/services.ts";
 
 export const handleCommand = async (
-    ctx: WithFilter<Context, "message">,
+    ctx: Context,
     services: Services,
     command: string | string[],
-    handler: (
-        ctx: WithFilter<Context, "message">,
-        services: Services,
-    ) => Promise<void>,
+    handler: (ctx: Context, services: Services) => Promise<void>,
 ) => {
     const message = _.get(ctx.msg, "text");
     const mentioned =

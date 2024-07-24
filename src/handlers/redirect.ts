@@ -1,18 +1,14 @@
 import { Context } from "@mtkruto/node";
-import { WithFilter } from "@mtkruto/node/script/client/0_filters";
 import _ from "lodash";
-import { Services } from "../types/services";
-import { Topic } from "../types/topic";
-import { yn } from "../utils/yn";
+import { Services } from "../types/services.ts";
+import { Topic } from "../types/topic.ts";
+import { yn } from "../utils/yn.ts";
 
 let previousTopic: Topic | undefined;
 
-export const handleRedirect = async (
-    ctx: WithFilter<Context, "message">,
-    services: Services,
-) => {
+export const handleRedirect = async (ctx: Context, services: Services) => {
     const { client, keyv } = services;
-    const { me, msg, chat } = ctx;
+    const { me, msg } = ctx;
 
     const isCerebroBot =
         yn(process.env.REDIRECT_FROM_ANYONE) ||
@@ -24,12 +20,12 @@ export const handleRedirect = async (
     }
 
     // If this is a topic message skip the handler
-    if (msg.replyToMessage || msg.from?.id === me?.id) {
+    if (!msg || msg.replyToMessage || msg.from?.id === me?.id) {
         return;
     }
 
     const text = _.get(msg, "text") || "";
-    const topicsKey = `topics:${chat.id}`;
+    const topicsKey = `topics:${msg.chat.id}`;
 
     // For each incoming message get the list of topics for the chat
     let topics: Topic[] = (await keyv.get(topicsKey)) || [];
@@ -56,13 +52,13 @@ export const handleRedirect = async (
         const document = _.get(msg, "document.fileId", "");
 
         if ("video" in msg) {
-            await client.sendVideo(chat.id, video, params);
+            await client.sendVideo(msg.chat.id, video, params);
         } else if ("audio" in msg) {
-            await client.sendAudio(chat.id, audio, params);
+            await client.sendAudio(msg.chat.id, audio, params);
         } else if ("photo" in msg) {
-            await client.sendPhoto(chat.id, photo, params);
+            await client.sendPhoto(msg.chat.id, photo, params);
         } else if ("document" in msg) {
-            await client.sendDocument(chat.id, document, params);
+            await client.sendDocument(msg.chat.id, document, params);
         }
 
         return;
@@ -80,7 +76,7 @@ export const handleRedirect = async (
         const finalText = `${text}\n↩️ <a href="${msg.link}">General</a>`;
 
         // Otherwise send the message to the corresponding topic
-        await client.sendMessage(chat.id, finalText, {
+        await client.sendMessage(msg.chat.id, finalText, {
             parseMode: "HTML",
             entities: _.get(msg, "entities") || [],
             replyTo: {

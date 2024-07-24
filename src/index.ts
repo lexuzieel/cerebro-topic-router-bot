@@ -2,11 +2,11 @@ import readline from "readline";
 import { Client, StorageLocalStorage } from "@mtkruto/node";
 import dotenv from "dotenv";
 import Keyv from "keyv";
-import KeyvFile from "keyv-file";
+import { KeyvFile } from "keyv-file";
 import _ from "lodash";
-import { handleCommand } from "./handlers/command";
-import { handleRedirect } from "./handlers/redirect";
-import { handleTopic } from "./handlers/topic";
+import { handleCommand } from "./handlers/command.ts";
+import { handleRedirect } from "./handlers/redirect.ts";
+import { handleTopic } from "./handlers/topic.ts";
 
 dotenv.config();
 
@@ -59,6 +59,8 @@ const services = {
     }
 
     client.on("message", async ctx => {
+        const { msg } = ctx;
+
         if (ctx.chat.type != "supergroup" || ctx.me?.id == ctx.from?.id) {
             return;
         }
@@ -71,21 +73,22 @@ const services = {
         await handleRedirect(ctx, services);
 
         await handleCommand(ctx, services, ["", "help"], async ctx => {
-            const replyTo = ctx.msg.replyToMessageId
+            const replyTo = msg.replyToMessageId
                 ? {
-                      messageId: ctx.msg.replyToMessageId,
+                      messageId: msg.replyToMessageId,
                   }
                 : undefined;
 
             await client.sendMessage(
-                ctx.msg.chat.id,
+                msg.chat.id,
                 `
-🔹 add - Add topic to the redirect list
-🔹 remove - Remove topic from the redirect list
-🔹 help - Show this message`,
+        🔹 add - Add topic to the redirect list
+        🔹 remove - Remove topic from the redirect list
+        🔹 help - Show this message`,
                 {
                     replyTo,
-            });
+                },
+            );
         });
     });
 
