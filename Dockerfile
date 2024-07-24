@@ -16,7 +16,7 @@ COPY . .
 # Compile the TypeScript source code
 RUN npm run build
 
-FROM build as dev
+FROM build AS dev
 
 CMD [ "npm", "run", "dev" ]
 
