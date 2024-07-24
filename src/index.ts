@@ -73,14 +73,17 @@ const services = {
         // TODO: Make this sequential
         await handleRedirect(ctx, services);
 
-        await handleCommand(ctx, services, "help", async ctx => {
+        await handleCommand(ctx, services, ["", "help"], async ctx => {
             const replyTo = ctx.msg.replyToMessageId
                 ? {
                       messageId: ctx.msg.replyToMessageId,
                   }
                 : undefined;
 
-            await client.sendMessage(ctx.msg.chat.id, "<help message>", {
+            await client.sendMessage(ctx.msg.chat.id, `
+🔹 add - Add topic to the redirect list
+🔹 remove - Remove topic from the redirect list
+🔹 help - Show this message`, {
                 replyTo,
             });
         });

@@ -34,7 +34,7 @@ export const handleTopic = async (
             id: topicId,
         };
 
-        await handleCommand(ctx, services, "forget", async () => {
+        await handleCommand(ctx, services, "remove", async () => {
             topics = _.remove(topics, t => t.name !== topic.name);
 
             await keyv.set(topicsKey, topics);
@@ -51,7 +51,7 @@ export const handleTopic = async (
             );
         });
 
-        await handleCommand(ctx, services, null, async () => {
+        await handleCommand(ctx, services, "add", async () => {
             topics = _.uniqBy([...topics, topic], t => t.name);
 
             await keyv.set(topicsKey, topics);
