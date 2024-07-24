@@ -7,7 +7,7 @@ import { Services } from "../types/services";
 export const handleCommand = async (
     ctx: WithFilter<Context, "message">,
     services: Services,
-    command: string | null,
+    command: string | string[],
     handler: (
         ctx: WithFilter<Context, "message">,
         services: Services,
@@ -21,13 +21,17 @@ export const handleCommand = async (
     const text = message?.slice((ctx.me?.username?.length || 0) + 2);
 
     if (mentioned) {
-        if (
-            (!command && text?.length == 0) ||
-            (command && text?.toLowerCase() === command.toLowerCase())
-        ) {
-            console.log(`Command '${command}' triggered by mention`);
+        const commands = _.isArray(command) ? command : [command];
 
-            return await handler(ctx, services);
+        for (const command of commands) {
+            if (
+                (!command && text?.length == 0) ||
+                (command && text?.toLowerCase() === command.toLowerCase())
+            ) {
+                console.log(`Command '${command}' triggered by mention`);
+
+                return await handler(ctx, services);
+            }
         }
     }
 };
