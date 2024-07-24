@@ -70,6 +70,9 @@ const services = {
 
         await handleTopic(ctx, services);
 
+        // TODO: Make this sequential
+        await handleRedirect(ctx, services);
+
         await handleCommand(ctx, services, "help", async ctx => {
             const replyTo = ctx.msg.replyToMessageId
                 ? {
